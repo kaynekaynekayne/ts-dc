@@ -38,6 +38,7 @@
     const maker=new coffeeMachine(32);
     console.log(maker);
     //static 붙이기 전엔 { coffeeBeans: 32, BEANS_GRAM_PER_SHOT: 7 }
+    //static 붙이고 나선 { coffeeBeans: 32 }
     console.log(maker.makeCoffee(2));
     //{ shots: 2, hasMilk: false }
 

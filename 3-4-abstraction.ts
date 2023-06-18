@@ -68,7 +68,13 @@
         makeCoffee(shots:number):CoffeeCup;
     }
 
-    class CoffeeMachine implements CoffeeMaker{
+    interface CommercialCoffeeMaker{
+        makeCoffee(shots:number):CoffeeCup;
+        fillCoffeeBeans(beans:number):void;
+        clean():void;
+    }
+
+    class CoffeeMachine implements CoffeeMaker, CommercialCoffeeMaker{
         //커피머신은 커피메이커 인터페이스를 구현하는 아이
         private coffeeBeans:number=0; //"instance level"
         private static BEANS_GRAM_PER_SHOT:number=7;
@@ -84,6 +90,10 @@
         fillCoffeeBeans(beans:number){
             if(beans<0) throw new Error("value for beans should be greater than 0")
             this.coffeeBeans+=beans;
+        }
+
+        clean(){
+            console.log("cleaning the machine")            
         }
 
         //grindBeans, preheat, extract 같은 과정은 외부에서 알 필요가
@@ -118,12 +128,40 @@
 
     // const maker=new coffeeMaker(32);
     const maker:CoffeeMachine=CoffeeMachine.makeMachine(32);
+    //CoffeeMachine->클래스 이름
     maker.fillCoffeeBeans(32);
     maker.makeCoffee(2);
     console.log(maker)
 
-    const maker2:CoffeeMaker=CoffeeMachine.makeMachine(32);
-    // maker2.fillCoffeeBeans(32); 오류남
+    const maker2:CommercialCoffeeMaker=CoffeeMachine.makeMachine(32);
+    // CommercialCoffeeMaker->인터페이스
+    maker2.fillCoffeeBeans(32);
     maker2.makeCoffee(2);
+    maker2.clean();
 
+    
+    class AmateurUser{
+        constructor(private machine:CoffeeMaker){} //인터페이스
+        makeCoffee(){
+            const coffee=this.machine.makeCoffee(2);
+            console.log(coffee);
+        }
+
+    }
+
+    class ProBarista{
+        constructor(private machine: CommercialCoffeeMaker){}
+        makeCoffee(){
+            const coffee=this.machine.makeCoffee(2);
+            console.log(coffee);
+            this.machine.fillCoffeeBeans(45);
+            this.machine.clean();
+        } //인터페이스2
+    }
+
+
+    const maker3:CoffeeMachine=CoffeeMachine.makeMachine(32);
+    const amateur=new AmateurUser(maker3);
+    const pro=new ProBarista(maker3);
+    pro.makeCoffee();
 }

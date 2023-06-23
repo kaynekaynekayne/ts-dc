@@ -6,7 +6,7 @@
         hasSugar?:boolean;
     }
 
-    interface CoffeeMaker {
+    interface CoffeeMaker { //규약
         makeCoffee(shots:number): CoffeeCup;
     }
 
@@ -52,7 +52,8 @@
             console.log(`pulling ${shots} shots`)
             return {
                 shots,
-                hasMilk:false
+                hasMilk:false,
+                hasSugar:false,
             }
         };
 
@@ -60,7 +61,7 @@
             this.grindBeans(shots);
             this.preheat();
             const coffee=this.extract(shots);
-            const sugarAdded=sugar.addSugar(coffee);
+            const sugarAdded=this.sugar.addSugar(coffee);
             return this.milk.makeMilk(sugarAdded);
         }
     }
@@ -127,9 +128,8 @@
 
     //싸구려 설탕 제조기
     class CandySugarMixer implements SugarProvider{
-        private getSugar(){
-            console.log("getting some sugar from candy")
-            return true;
+        private getSugar():void{
+            console.log("getting some sugar from candy");
         }
 
         addSugar(cup:CoffeeCup):CoffeeCup{
@@ -143,9 +143,8 @@
 
     //설탕 제조기
     class SugarMixer implements SugarProvider{
-        private getSugar(){
-            console.log("getting some sugar from jar!")
-            return true;
+        private getSugar():void{
+            console.log("getting some sugar from jar!");
         }
 
         addSugar(cup:CoffeeCup):CoffeeCup{
@@ -184,4 +183,9 @@
     const latteMachine = new CoffeeMachine(12, cheapMilkMaker, noSugar);
     const coldLatteMachine = new CoffeeMachine(12, coldMilkMaker, noSugar);
     const sweetLatteMachine = new CoffeeMachine(12, cheapMilkMaker, candySugar);
+
+    latteMachine.fillCoffeeBeans(48);
+    console.log(latteMachine.makeCoffee(1));
+
+    console.log(sweetMachine.makeCoffee(1));
 }

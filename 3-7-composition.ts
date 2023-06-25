@@ -1,4 +1,16 @@
+// type vs interface
+
+//type: 모든 타입에 사용 가능, 확장 불가 
+// 확장 불가=> type A={} 한 다음 또 type A={} 했을 때 duplicate error 발생
+//interface: 오로지 객체 타입만 사용 가능, 확장 가능
+
+
+// extends vs implements
+// 상속 vs 구현
+// extends: 부모의 모든 기능을 다 사용할 필요 없음
+// implements: 다 사용 해야함, 무조건 부모의 메서드를 재정의 (오버라이딩)
 {
+
 
     type CoffeeCup={
         shots:number;
@@ -167,25 +179,60 @@
 
     //우유
     const cheapMilkMaker = new CheapMilkSteamer();
+    console.log(cheapMilkMaker);
+    console.log("---------");
     const fancyMilkMaker = new FancyMilkSteamer();
+    console.log(fancyMilkMaker);
+    console.log("---------");
     const coldMilkMaker = new ColdMilkSteamer();
+    console.log(coldMilkMaker);
+    console.log("---------");
     const noMilk=new NoMilk();
+    console.log(noMilk);
+    console.log("---------");
 
     //설탕
     const candySugar = new CandySugarMixer();
+    console.log(candySugar);
+    console.log("---------");
     const sugar = new SugarMixer();
+    console.log(sugar);
+    console.log("---------");
     const noSugar = new NoSugar();
+    console.log(noSugar)
+    console.log("--------")
 
     //
     const sweetCandyMachine = new CoffeeMachine(12, noMilk, candySugar);
+    console.log(sweetCandyMachine);
+    console.log("---------");
+
     const sweetMachine = new CoffeeMachine(12, noMilk, sugar);
+    console.log(sweetMachine);
+    console.log("---------");
 
     const latteMachine = new CoffeeMachine(12, cheapMilkMaker, noSugar);
+    console.log(latteMachine);
+    console.log("-------");
+
     const coldLatteMachine = new CoffeeMachine(12, coldMilkMaker, noSugar);
+    console.log(coldLatteMachine);
+    console.log("-------");
+
     const sweetLatteMachine = new CoffeeMachine(12, cheapMilkMaker, candySugar);
+    console.log(sweetLatteMachine);
+    console.log("-------");
 
     latteMachine.fillCoffeeBeans(48);
     console.log(latteMachine.makeCoffee(1));
+    console.log("-------");
 
-    console.log(sweetMachine.makeCoffee(1));
+    sweetMachine.fillCoffeeBeans(46);
+    console.log(sweetMachine.makeCoffee(2));
+    console.log("-------")
+
+    sweetLatteMachine.fillCoffeeBeans(32);
+    console.log(sweetLatteMachine.makeCoffee(2));
+    console.log("-------")
+
 }

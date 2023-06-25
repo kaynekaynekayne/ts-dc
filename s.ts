@@ -1,158 +1,60 @@
+//head가 마지막에 들어온 것을 가리키게
 
-{
-
-    type CoffeeCup={
-        shots:number;
-        hasMilk?:boolean;
-        hasSugar?:boolean;
-    }
-
-    interface CoffeeMaker{
-        makeCoffee(shots:number):CoffeeCup;
-    }
-
-
-    class CoffeeMachine implements CoffeeMaker{
-        private coffeeBeans:number=0;
-        private static BEANS_GRAM_PER_SHOT:number=7;
-
-        constructor(coffeeBeans:number){
-            this.coffeeBeans=coffeeBeans;
-        }
-
-        static makeMachine(coffeeBeans:number):CoffeeMachine{
-            return new CoffeeMachine(coffeeBeans)
-        }
-
-        fillCoffeeBeans(beans:number){
-            if(beans<0) throw new Error("value for beans should be greater than 0")
-            this.coffeeBeans+=beans;
-        }
-
-        clean(){
-            console.log("cleaning the machine")            
-        }
-
-        
-        private grindBeans(shots:number){ 
-            console.log(`grinding beans for ${shots}`);
-            if(this.coffeeBeans<shots*CoffeeMachine.BEANS_GRAM_PER_SHOT){
-                throw new Error("not enough coffee beans")
-            }
-            this.coffeeBeans-=shots*CoffeeMachine.BEANS_GRAM_PER_SHOT;
-        }
-
-        private preheat():void{
-            console.log("heating up...");
-        }
-
-        private extract(shots:number):CoffeeCup{
-            console.log(`pulling ${shots}...`);
-            return {
-                shots,
-                hasMilk:false
-            }
-        }
-
-        makeCoffee(shots:number):CoffeeCup{
-            this.grindBeans(shots);
-            this.preheat();
-            return this.extract(shots);
-        }
-
-    }
-
-    interface MilkFrother{
-        makeMilk(cup:CoffeeCup):CoffeeCup;
-
-    }
-
-    interface SugarProvider{
-        addSugar(cup:CoffeeCup):CoffeeCup;
-    }
-
-    //싸구려 우유 거품기
-    //카페라떼머신 안에 우유 넣는 메소드를 만드는게 아니라 아예 기능을 밖에서 생성
-    class CheapMilkSteamer implements MilkFrother{
-        private steamMilk():void{
-            console.log("steam some milk.....");
-        }
-        makeMilk(cup:CoffeeCup):CoffeeCup{
-            this.steamMilk();
-            return {
-                ...cup,
-                hasMilk:true
-            }
-        }
-    }
-
-    //설탕 제조기
-    class CandySugarMixer implements SugarProvider{
-        private getSugar(){
-            console.log("get sugar");
-            return true;
-        }
-        addSugar(cup:CoffeeCup):CoffeeCup{
-            const sugar=this.getSugar();
-            return{
-                ...cup,
-                hasSugar:sugar,
-            }
-        }
-    }
-
-    class CaffeeLatteMachine extends CoffeeMachine{
-        constructor(
-            beans:number, 
-            public readonly serialNum:string, 
-            private milkFrother:MilkFrother
-        ){
-            super(beans);
-        }
-
-        makeCoffee(shots:number):CoffeeCup{
-            const coffee=super.makeCoffee(shots); //부모 클래스의 함수 호출
-            return this.milkFrother.makeMilk(coffee)
-        }
-    }
-
-    class SweetCoffeeMaker extends CoffeeMachine{
-        constructor(
-            private beans:number,
-            private sugarFrother:SugarProvider,
-        ){
-            super(beans);
-        }
-
-        makeCoffee(shots: number):CoffeeCup {
-            const coffee=super.makeCoffee(shots);
-            return this.sugarFrother.addSugar(coffee);
-        }
-    }
-
-    class SweetCaffeLatteMachine extends CoffeeMachine {
-        constructor(
-            private beans:number,
-            private sugar:SugarProvider,
-            private milk:MilkFrother,
-        ){ 
-            super(beans);
-        }
-
-        makeCoffee(shots:number):CoffeeCup{
-            const coffee=super.makeCoffee(shots);
-            const sugarAdded=this.sugar.addSugar(coffee);
-            return this.milk.makeMilk(sugarAdded);
-        }
-    }
-    
-    const cheapMilkMaker=new CheapMilkSteamer();
-    const candySugar=new CandySugarMixer();
-    const sweetMachine=new SweetCoffeeMaker(12,candySugar);
-    const latteMachine= new CaffeeLatteMachine(12, '44', cheapMilkMaker);
-    const sweetLatteMachine=new SweetCaffeLatteMachine(
-        12, 
-        cheapMilkMaker, 
-        candySugar
-    );
+interface Stack{
+    readonly size:number;
+    push(value:string):void;
+    pop():string;
 }
+
+type StackNode={
+    readonly value:string;
+    readonly next?:StackNode; //stacknode | undefined
+}
+
+class StackImpl implements Stack{
+    private _size: number=0;
+    private head?:StackNode;
+    
+    constructor(private capicity:number){}
+
+    get size(){
+        return this._size;
+    }
+    push(value: string){
+        if(this.size===this.capicity){
+            throw new Error("용량 없음 stack is full")
+        }
+        const node:StackNode={value:value, next:this.head};
+        this.head=node; //헤드가 새로 들어온 애를 가리키도록
+        this._size++;
+    }
+    pop():string { //헤드가 가리키는 애를 pop 해야함
+        if(this.head==null){// 스택이 비어 있음
+            //this.head===undefined 로 하면 null 통과되어버림
+            //null==undefined (부등호 두 개에서는 동일) null!==undefined
+            //==null 하면 undefined, null 두 개 다 거를 수 있음
+            throw new Error("stack is empty");
+        }
+        const node=this.head;
+        this.head=node.next;
+        this._size--;
+        return node.value;
+    }
+}
+
+const stack=new StackImpl(5);
+console.log(stack)
+console.log("------")
+stack.push("jae 1");
+stack.push("wonpil 2");
+stack.push("youngk 3");
+console.log(stack)
+console.log("------")
+
+while(stack.size!==0){//0이면 빠져나옴
+    console.log(stack.pop())
+    console.log(stack)
+    console.log("------")
+}
+
+// stack.pop(); //error
